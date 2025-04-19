@@ -19,7 +19,7 @@
 
 # production
 /build
-
+.env
 # prisma
 /prisma/migration
 # misc

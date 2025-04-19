@@ -2,6 +2,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { Copy } from 'lucide-react'; 
 
 export default function Home() {
   const { data: session } = useSession();
@@ -40,6 +41,12 @@ export default function Home() {
   ];
   
   const gridLines = Array.from({ length: 10 }).map((_, i) => i * 10);
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setMsg('Copied to clipboard!');
+    setTimeout(() => setMsg(''), 2000);
+  };
 
   return (
     <motion.div
@@ -258,15 +265,29 @@ export default function Home() {
           >
             <div className="flex flex-col space-y-1">
               <p className="text-gray-400 text-sm">API URL</p>
-              <div className="bg-gray-800/80 rounded-lg p-3 text-blue-300 font-mono text-sm overflow-x-auto border border-gray-700/50">
-                {session.user?.apiUrl || 'Not available'}
+              <div className="bg-gray-800/80 rounded-lg p-3 text-blue-300 font-mono text-sm overflow-x-auto border border-gray-700/50 flex items-center justify-between">
+                <span className="overflow-x-auto">{session.user?.apiUrl || 'Not available'}</span>
+                <button 
+                  onClick={() => copyToClipboard(session.user?.apiUrl || 'Not available')}
+                  className="p-2 hover:bg-gray-700 rounded-full transition flex-shrink-0"
+                  title="Copy API URL"
+                >
+                  <Copy className="w-5 h-5 text-blue-400" />
+                </button>
               </div>
             </div>
             
             <div className="flex flex-col space-y-1">
               <p className="text-gray-400 text-sm">API KEY</p>
-              <div className="bg-gray-800/80 rounded-lg p-3 text-green-300 font-mono text-sm overflow-x-auto border border-gray-700/50">
-                {session.user?.apiKey || 'Hidden'}
+              <div className="bg-gray-800/80 rounded-lg p-3 text-green-300 font-mono text-sm overflow-x-auto border border-gray-700/50 flex items-center justify-between">
+                <span className="overflow-x-auto">{session.user?.apiKey || 'Hidden'}</span>
+                <button 
+                  onClick={() => copyToClipboard(session.user?.apiKey || '')}
+                  className="p-2 hover:bg-gray-700 rounded-full transition flex-shrink-0"
+                  title="Copy API Key"
+                >
+                  <Copy className="w-5 h-5 text-blue-400" />
+                </button>
               </div>
             </div>
             
