@@ -4,6 +4,15 @@ import { log } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 
 export default async function createHandler(req, res) {
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   console.log('[CREATE] Incoming request:', req.method, req.url);
 
   if (req.method !== 'POST') {
