@@ -5,6 +5,17 @@ import { prisma } from '@/lib/prisma';
 import { randomUUID } from 'crypto';
 
 export const authOptions: AuthOptions = {
+  cookies: {
+  sessionToken: {
+    name: `__Secure-next-auth.session-token`,
+    options: {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+    },
+  },
+},
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -42,7 +53,7 @@ export const authOptions: AuthOptions = {
         session.user.credits = dbUser.credits;
 
         // Add api_url based on environment or known base URL
-        const baseUrl = process.env.NEXTAUTH_URL;
+        const baseUrl = process.env.NEXTAUTH_URL || "https://formpilot-assignment-deep-rho.vercel.app";
         session.user.apiUrl = `${baseUrl}/api/use?apiKey=${dbUser.apiKey}`;
       }
 
