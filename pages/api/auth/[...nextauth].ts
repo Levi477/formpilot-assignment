@@ -1,7 +1,7 @@
 // pages/api/auth/[...nextauth].ts
 import NextAuth, { AuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-import { prisma } from '@/ib/prisma';
+import { prisma } from '@/lib/prisma';
 import { randomUUID } from 'crypto';
 
 export const authOptions: AuthOptions = {
@@ -22,7 +22,6 @@ export const authOptions: AuthOptions = {
           data: {
             email: user.email!,
             name: user.name ?? '',
-            image: user.image,
             apiKey: randomUUID(),
             credits: 4,
             rechargeCount: 0,
@@ -41,6 +40,10 @@ export const authOptions: AuthOptions = {
         session.user.id = dbUser.id;
         session.user.apiKey = dbUser.apiKey;
         session.user.credits = dbUser.credits;
+
+        // Add api_url based on environment or known base URL
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+        session.user.apiUrl = `${baseUrl}/api/use?apiKey=${dbUser.apiKey}`;
       }
 
       return session;

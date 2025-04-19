@@ -1,8 +1,8 @@
 // pages/api/user/credits.ts
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]';
-import { prisma } from '@/ib/prisma';
-import { log } from '@/ib/logger';
+import { prisma } from '@/lib/prisma';
+import { log } from '@/lib/logger';
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);

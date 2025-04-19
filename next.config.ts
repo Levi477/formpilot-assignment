@@ -5,4 +5,27 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 };
 
+module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/create',
+        destination: '/api/crud/create',
+      },
+      {
+        source: '/api/get',
+        destination: '/api/crud/get',
+      },
+      {
+        source: '/api/update',
+        destination: '/api/crud/update',
+      },
+      {
+        source: '/api/delete',
+        destination: '/api/crud/delete',
+      },
+    ];
+  },
+};
+
 export default nextConfig;

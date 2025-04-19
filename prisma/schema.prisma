@@ -11,9 +11,20 @@ model User {
   id             String   @id @default(cuid())
   email          String   @unique
   name           String?
-  image          String?
-  apiKey         String
+  apiKey         String   @unique
   credits        Int      @default(4)
   rechargeCount  Int      @default(0)
   createdAt      DateTime @default(now())
+  apiUri         String?   @unique
+  data Data[]
+}
+
+model Data {
+  id        Int      @id @default(autoincrement())
+  userEmail String
+  value     String
+  txhash    String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userEmail], references: [email])
 }
