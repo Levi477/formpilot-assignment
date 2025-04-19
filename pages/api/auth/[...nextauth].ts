@@ -65,7 +65,7 @@ export const authOptions: AuthOptions = {
         session.user.credits = dbUser.credits;
 
         const baseUrl = process.env.NEXTAUTH_URL;
-        session.user.apiUrl = `${baseUrl}/api/use?apiKey=${dbUser.apiKey}`;
+        session.user.apiUrl = baseUrl;
       } else {
         console.warn('[NextAuth] ⚠️ No user found in DB for session');
       }
