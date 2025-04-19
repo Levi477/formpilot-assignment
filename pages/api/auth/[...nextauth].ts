@@ -13,7 +13,7 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      const existingUser = await prisma.user.findUnique({
+      const existingUser = await prisma.user.findFirst({
         where: { email: user.email! },
       });
 
@@ -42,7 +42,7 @@ export const authOptions: AuthOptions = {
         session.user.credits = dbUser.credits;
 
         // Add api_url based on environment or known base URL
-        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+        const baseUrl = process.env.NEXTAUTH_URL;
         session.user.apiUrl = `${baseUrl}/api/use?apiKey=${dbUser.apiKey}`;
       }
 
