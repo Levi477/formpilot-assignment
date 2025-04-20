@@ -16,28 +16,28 @@ export default function Home() {
     setCredits(res.data.credits);
   };
 
-  const handleRecharge = async () => {
-    try {
-      // First, do the regular recharge
-      const res = await axios.post('/api/user/recharge');
-      setMsg(res.data.status);
-      
-      // Update credits
-      getCredits();
-      
-      // Increment local recharge count
-      const newCount = rechargeCount + 1;
-      setRechargeCount(newCount);
-      
-      // If this was the second recharge, show email prompt
-      if (newCount === 2) {
-        setShowEmailPrompt(true);
-      }
-    } catch (err) {
-      setMsg(err.response?.data?.error || 'Error occurred');
-    }
-  };
+const handleRecharge = async () => {
+  if (rechargeCount >= 2) {
+    setMsg('Recharge limit reached. Please send an email for more credits.');
+    setShowEmailPrompt(true);
+    return;
+  }
 
+  try {
+    const res = await axios.post('/api/user/recharge');
+    setMsg(res.data.status);
+    await getCredits();
+    const newCount = rechargeCount + 1;
+    setRechargeCount(newCount);
+    
+    // Optional: you can still show the prompt on second try
+    if (newCount === 2) {
+      setShowEmailPrompt(true);
+    }
+  } catch (err) {
+    setMsg(err.response?.data?.error || 'Error occurred');
+  }
+};
   const handleSendEmail = async () => {
     try {
       // Open email client
