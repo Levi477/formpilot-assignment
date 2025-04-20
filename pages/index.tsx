@@ -17,7 +17,7 @@ export default function Home() {
   };
 
 const handleRecharge = async () => {
-  if (rechargeCount >= 2) {
+  if (rechargeCount >= 1) {
     setMsg('Recharge limit reached. Please send an email for more credits.');
     setShowEmailPrompt(true);
     return;
@@ -30,7 +30,6 @@ const handleRecharge = async () => {
     const newCount = rechargeCount + 1;
     setRechargeCount(newCount);
     
-    // Optional: you can still show the prompt on second try
     if (newCount === 2) {
       setShowEmailPrompt(true);
     }
