@@ -2,12 +2,14 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { Copy } from 'lucide-react'; 
+import { Copy, Mail } from 'lucide-react'; 
 
 export default function Home() {
   const { data: session } = useSession();
   const [credits, setCredits] = useState(null);
   const [msg, setMsg] = useState('');
+  const [rechargeCount, setRechargeCount] = useState(0);
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false);
 
   const getCredits = async () => {
     const res = await axios.get('/api/user/credits');
@@ -16,12 +18,30 @@ export default function Home() {
 
   const handleRecharge = async () => {
     try {
+      // Increment recharge count
+      const newCount = rechargeCount + 1;
+      setRechargeCount(newCount);
+      
       const res = await axios.post('/api/user/recharge');
       setMsg(res.data.status);
       getCredits();
+      
+      // Check if this is the second recharge
+      if (newCount === 2) {
+        setShowEmailPrompt(true);
+      }
     } catch (err) {
       setMsg(err.response?.data?.error || 'Error occurred');
     }
+  };
+
+  const handleSendEmail = () => {
+    const emailSubject = "Recharge Credit for Crud DB";
+    const emailAddress = "deepgajjar54@gmail.com";
+    const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(emailSubject)}`;
+    window.open(mailtoLink, '_blank');
+    setShowEmailPrompt(false);
+    setMsg('Email client opened');
   };
 
   useEffect(() => {
@@ -41,7 +61,6 @@ export default function Home() {
   ];
   
   const gridLines = Array.from({ length: 10 }).map((_, i) => i * 10);
-
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     setMsg('Copied to clipboard!');
@@ -95,7 +114,6 @@ export default function Home() {
             />
           ))}
         </div>
-
         {/* Floating elements */}
         {backgroundElements.map((el, i) => (
           <motion.div
@@ -121,7 +139,6 @@ export default function Home() {
             }}
           />
         ))}
-
         {/* Background glow effect */}
         <motion.div
           className="absolute rounded-full bg-blue-600 opacity-10 blur-3xl"
@@ -145,7 +162,6 @@ export default function Home() {
           }}
         />
       </div>
-
       {/* Title Bar */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -170,7 +186,6 @@ export default function Home() {
           <h1 className="text-xl font-bold tracking-wider" style={{ fontFamily: "'Futura', 'Trebuchet MS', sans-serif" }}>CRUD-DB</h1>
         </div>
       </motion.div>
-
       <motion.h1
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -191,7 +206,6 @@ export default function Home() {
           transition={{ duration: 3, repeat: Infinity }}
         />
       </motion.h1>
-
       {!session ? (
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -239,7 +253,6 @@ export default function Home() {
             }}
             transition={{ duration: 5, repeat: Infinity }}
           />
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -256,7 +269,6 @@ export default function Home() {
               <span>{session.user?.email}</span>
             </div>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -317,8 +329,40 @@ export default function Home() {
               </motion.button>
             </div>
           </motion.div>
-
-          {msg && (
+          
+          {/* Email prompt modal */}
+          {showEmailPrompt && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mt-4 bg-blue-900/30 backdrop-blur-md rounded-xl p-4 border border-blue-800/50"
+            >
+              <div className="flex items-start mb-3">
+                <Mail className="w-5 h-5 text-blue-400 mr-2 mt-1" />
+                <div>
+                  <h3 className="font-medium text-blue-300">Contact Support</h3>
+                  <p className="text-sm text-gray-300">Would you like to contact support for more credits?</p>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button 
+                  onClick={() => setShowEmailPrompt(false)} 
+                  className="px-3 py-1 text-sm text-gray-300 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleSendEmail}
+                  className="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-sm shadow-lg flex items-center"
+                >
+                  <Mail className="w-4 h-4 mr-1" />
+                  Send Email
+                </button>
+              </div>
+            </motion.div>
+          )}
+          
+          {msg && !showEmailPrompt && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -327,7 +371,7 @@ export default function Home() {
               {msg}
             </motion.div>
           )}
-
+          
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
