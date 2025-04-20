@@ -18,15 +18,18 @@ export default function Home() {
 
   const handleRecharge = async () => {
     try {
-      // Increment recharge count
+      // First, do the regular recharge
+      const res = await axios.post('/api/user/recharge');
+      setMsg(res.data.status);
+      
+      // Update credits
+      getCredits();
+      
+      // Increment local recharge count
       const newCount = rechargeCount + 1;
       setRechargeCount(newCount);
       
-      const res = await axios.post('/api/user/recharge');
-      setMsg(res.data.status);
-      getCredits();
-      
-      // Check if this is the second recharge
+      // If this was the second recharge, show email prompt
       if (newCount === 2) {
         setShowEmailPrompt(true);
       }
@@ -35,13 +38,39 @@ export default function Home() {
     }
   };
 
-  const handleSendEmail = () => {
-    const emailSubject = "Recharge Credit for Crud DB";
-    const emailAddress = "deepgajjar54@gmail.com";
-    const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(emailSubject)}`;
-    window.open(mailtoLink, '_blank');
-    setShowEmailPrompt(false);
-    setMsg('Email client opened');
+  const handleSendEmail = async () => {
+    try {
+      // Open email client
+      const emailSubject = "Recharge Credit for Crud DB";
+      const emailAddress = "deepgajjar54@gmail.com";
+      const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(emailSubject)}`;
+      window.open(mailtoLink, '_blank');
+      
+      // Hide the email prompt
+      setShowEmailPrompt(false);
+      
+      // Update message
+      setMsg('Email client opened. Adding 4 more credits...');
+      
+      // Simulate processing the email by adding 4 credits directly
+      // In a real application, this should be a separate API call
+      setTimeout(async () => {
+        try {
+          // Use a custom endpoint to add 4 more credits
+          await axios.post('/api/user/email-bonus-credits');
+          
+          // Update credits display
+          getCredits();
+          
+          // Show success message
+          setMsg('Email sent! 4 bonus credits added.');
+        } catch (error) {
+          setMsg('Error adding bonus credits.');
+        }
+      }, 2000); // Wait 2 seconds to simulate processing time
+    } catch (err) {
+      setMsg('Error opening email client.');
+    }
   };
 
   useEffect(() => {
@@ -340,8 +369,8 @@ export default function Home() {
               <div className="flex items-start mb-3">
                 <Mail className="w-5 h-5 text-blue-400 mr-2 mt-1" />
                 <div>
-                  <h3 className="font-medium text-blue-300">Contact Support</h3>
-                  <p className="text-sm text-gray-300">Would you like to contact support for more credits?</p>
+                  <h3 className="font-medium text-blue-300">Get More Credits</h3>
+                  <p className="text-sm text-gray-300">Send an email to get 4 additional credits.</p>
                 </div>
               </div>
               <div className="flex justify-end space-x-3">
